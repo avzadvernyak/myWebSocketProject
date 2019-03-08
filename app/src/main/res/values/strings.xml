@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My WebSocket Project</string>
+    <string name="startButton">Start</string>
+</resources>

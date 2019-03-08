@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:id="@+id/linearLayout">
+
+    <Button
+            android:id="@+id/startButton"
+            android:text="@string/startButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_conversion_absoluteHeight="48dp"
+            tools:layout_editor_absoluteY="0dp" tools:layout_editor_absoluteX="0dp"
+            tools:layout_conversion_absoluteWidth="411dp"/>
+    <TextView
+            android:id="@+id/temperatureTextView"
+            android:text="Temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textStyle="bold" android:textAlignment="center"
+            android:textSize="30sp"/>
+</LinearLayout>
