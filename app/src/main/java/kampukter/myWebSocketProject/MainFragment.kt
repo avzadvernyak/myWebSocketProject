@@ -11,6 +11,9 @@ import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import okhttp3.*
 import java.util.concurrent.TimeUnit
+import android.content.Intent
+
+
 
 val temperature  =  MutableLiveData<String>()
 val logProcessWS =  MutableLiveData<String>()
@@ -43,10 +46,13 @@ class MainFragment : Fragment() {
         startButton.setOnClickListener {
             logTextView.text = "Press Start Button"
             Log.d("blablabla", "Press Start Button")
+            activity?.startService(Intent(activity, WebSocketService::class.java))
         }
         stopButton.setOnClickListener {
             logTextView.text = "Press Stop Button"
-            Log.d("blablabla", "Press Stop Button")
+            activity?.stopService(
+                Intent(activity, WebSocketService::class.java)
+            )
         }
     }
 
