@@ -19,7 +19,30 @@ class WebSocketService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("blablabla", "onCreate service")
+    }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Log.d("blablabla", "Start service")
+        /*
+        if (flags and Service.START_FLAG_RETRY == 0) {
+            // TODO Если это повторный запуск, выполнить какие-то действия.
+        } else {
+            // TODO Альтернативные действия в фоновом режиме.
+        }
+        return Service.START_STICKY
+        */
+        myWebSocket()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Log.d("blablabla", "Stop service")
+    }
+
+    private fun myWebSocket() {
         client = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .build()
@@ -30,24 +53,8 @@ class WebSocketService : Service() {
 
         // this provide to make 'Open ws connection'
         client.newWebSocket(request, wsListener).run { Log.d("blablabla", "Start") }
+
     }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.d("blablabla", "Start service")
-        if (flags and Service.START_FLAG_RETRY == 0) {
-            // TODO Если это повторный запуск, выполнить какие-то действия.
-        } else {
-            // TODO Альтернативные действия в фоновом режиме.
-        }
-        return Service.START_STICKY
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Log.d("blablabla", "Stop service")
-    }
-
     private class EchoWebSocketListener : WebSocketListener() {
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
