@@ -1,20 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent" android:id="@+id/linearLayout">
-
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <Button
             android:id="@+id/startButton"
-            android:text="@string/startButton"
+            android:text="@string/startButtonTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:layout_conversion_absoluteHeight="48dp"
-            tools:layout_editor_absoluteY="0dp" tools:layout_editor_absoluteX="0dp"
-            tools:layout_conversion_absoluteWidth="411dp"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/stopButton"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/logTextView"/>
+    <Button
+            android:id="@+id/stopButton"
+            android:text="@string/stopButtonTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/startButton"
+            android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/startButton"/>
     <TextView
-            android:id="@+id/temperatureTextView"
-            android:text="Temperature"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:textStyle="bold" android:textAlignment="center"
-            android:textSize="30sp"/>
-</LinearLayout>
+            android:id="@+id/logTextView"
+            android:text="@string/logTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
+    <TextView
+            android:id="@+id/firstSensorTitleTextView"
+            android:text="@string/firstSensorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
+    <TextView
+            android:id="@+id/firstSensorValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/firstSensorTitleTextView"
+            app:layout_constraintStart_toEndOf="@+id/firstSensorTitleTextView" android:layout_marginStart="8dp"/>
+    <TextView
+            android:id="@+id/secondSensorTitleTextView"
+            android:text="@string/secondSensorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp" app:layout_constraintTop_toBottomOf="@+id/firstSensorTitleTextView"/>
+    <TextView
+            android:id="@+id/secondSensorValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/secondSensorTitleTextView" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/secondSensorTitleTextView"/>
+    <TextView
+            android:id="@+id/statusRelayTitleTextView"
+            android:text="@string/statusRelayTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/secondSensorTitleTextView"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
+    <CheckBox
+            android:id="@+id/statusRelayTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:layout_constraintStart_toEndOf="@+id/statusRelayTitleTextView"
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/statusRelayTitleTextView"
+            app:layout_constraintBottom_toBottomOf="@+id/statusRelayTitleTextView"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
