@@ -14,7 +14,8 @@
             app:layout_constraintEnd_toStartOf="@+id/stopButton"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/logTextView"/>
+            app:layout_constraintBottom_toTopOf="@+id/logTextView"
+            android:visibility="invisible"/>
     <Button
             android:id="@+id/stopButton"
             android:text="@string/stopButtonTitle"
@@ -23,7 +24,7 @@
             app:layout_constraintStart_toEndOf="@+id/startButton"
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintTop_toTopOf="@+id/startButton"/>
+            app:layout_constraintTop_toTopOf="@+id/startButton" android:visibility="invisible"/>
     <TextView
             android:id="@+id/logTextView"
             android:text="@string/logTextView"
@@ -68,7 +69,7 @@
             app:layout_constraintTop_toBottomOf="@+id/secondSensorTitleTextView"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
     <CheckBox
-            android:id="@+id/statusRelayTextView"
+            android:id="@+id/statusRelayCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:layout_constraintStart_toEndOf="@+id/statusRelayTitleTextView"
             android:layout_marginStart="8dp"

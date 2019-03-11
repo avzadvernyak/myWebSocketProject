@@ -2,89 +2,100 @@ package kampukter.myWebSocketProject
 
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.google.gson.Gson
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
 class WebSocketService : Service() {
 
+    private var ws: WebSocket? = null
     lateinit var client: OkHttpClient
+    private val binder = MyBinder()
 
     override fun onBind(intent: Intent): IBinder? {
 
         Log.d("blablabla", "onBind service")
-        return null
+        return binder
     }
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("blablabla", "onCreate service")
-    }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.d("blablabla", "Start service")
-        /*
-        if (flags and Service.START_FLAG_RETRY == 0) {
-            // TODO Если это повторный запуск, выполнить какие-то действия.
-        } else {
-            // TODO Альтернативные действия в фоновом режиме.
-        }
-        return Service.START_STICKY
-        */
+        Log.d("blablabla", "------------------- onCreate service")
         myWebSocket()
-        return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    internal inner class MyBinder : Binder() {
 
-        Log.d("blablabla", "Stop service")
+        // размести вот здесь
+
+        fun getService(): WebSocketService {
+            return this@WebSocketService
+        }
     }
 
+    fun setRelay1(isCheck: Boolean) {
+        if (isCheck) {
+            ws?.send("Relay1On")
+            Log.v("blablabla", "Send Relay1On")
+        } else {
+            ws?.send("Relay1Off")
+            Log.v("blablabla", "Send Relay1Off")
+        }
+    }
+
+    //wan IP ws://109.254.66.131:81
+    //lan IP ws://192.168.0.82:81
     private fun myWebSocket() {
         client = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .build()
         val request = Request.Builder()
-            .url("ws://192.168.0.82:81")
+            .url("ws://109.254.66.131:81")
             .build()
         val wsListener = EchoWebSocketListener()
 
-        // this provide to make 'Open ws connection'
-        client.newWebSocket(request, wsListener).run { Log.d("blablabla", "Start") }
+        client.newWebSocket(request, wsListener).run {
+            ws = this
+            Log.d("blablabla", "Start")
+        }
 
     }
+
     private class EchoWebSocketListener : WebSocketListener() {
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
             super.onOpen(webSocket, response)
-            logProcessWS.postValue( "Press Stop Button" )
-            Log.v("blablabla", "Open WebSocket")
+            logProcessWS.postValue("Open WebSocket")
         }
+
         override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
             super.onFailure(webSocket, t, response)
-            logProcessWS.postValue( """Failure t - ${t.toString()}""" )
-            Log.v("blablabla", """Failure t - ${t.toString()}""")
-            Log.v("blablabla", """Failure response - ${response.toString()}""")
+            logProcessWS.postValue("""Connect Error - ${t.toString()}""")
+            Log.v("blablabla", """Connect WebSocket Error - ${t.toString()}""")
         }
+
         override fun onMessage(webSocket: WebSocket?, text: String?) {
             super.onMessage(webSocket, text)
-            Log.v("blablabla", "Receiving : $text")
-            temperature.postValue(text)
-            logProcessWS.postValue( "Receiving : $text" )
+            //Log.v("blablabla", "Receiving : $text")
+            if (text == "Connected") logProcessWS.postValue("Receiving : $text")
+            else {
+                val result = Gson().fromJson(text, UnitSensorInfo::class.java)
+                sensorInfo.postValue(result)
+                logProcessWS.postValue("Receiving from ${result.unit}")
+            }
         }
 
         override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
             super.onClosing(webSocket, code, reason)
-            Log.v("blablabla", "Closing : $code / $reason")
-
-            logProcessWS.postValue( "Closing : $code / $reason" )
-            webSocket!!.close(NORMAL_CLOSURE_STATUS, null)
+            //Log.v("blablabla", "Closing : $code / $reason")
+            logProcessWS.postValue("Closing WebSocket session : $code")
+            //webSocket!!.close(NORMAL_CLOSURE_STATUS, null)
         }
-
-        companion object {
-            private val NORMAL_CLOSURE_STATUS = 1000
-        }
+    }
+    companion object {
+        private const val NORMAL_CLOSURE_STATUS = 1000
     }
 }
