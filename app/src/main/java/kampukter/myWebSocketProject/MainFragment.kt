@@ -14,9 +14,11 @@ import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import androidx.appcompat.app.AppCompatActivity
 
 val sensorInfo = MutableLiveData<UnitSensorInfo>()
 val logProcessWS = MutableLiveData<String>()
+val isConnectToWebSocket = MutableLiveData<Boolean>()
 
 class MainFragment : Fragment() {
 
@@ -26,7 +28,6 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("blablabla", "-----------------onCreate Fragment")
         if (wsConnect == null) {
             wsConnect = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -35,17 +36,14 @@ class MainFragment : Fragment() {
 
                     val binder = service as WebSocketService.MyBinder
                     myService = binder.getService()
-                    Log.d("blablabla", "-----------------onServiceConnected")
                 }
-
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d("blablabla", "-----------------onServiceDisconnected")
                 }
             }
             activity?.bindService(Intent(activity, WebSocketService::class.java), wsConnect!!, Context.BIND_AUTO_CREATE)
         }
-
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,17 +54,29 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        sensorInfo.observe(this, Observer { firstSensorValueTextView.text = it.sensor1.toString()
-        statusRelayCheckBox.isChecked = (it.relay1 )})
-        logProcessWS.observe(this, Observer { msg -> logTextView.text = msg })
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbarUnitState)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title = "Unit Info"
+        }
 
-        /*
-        startButton.setOnClickListener {
-            logTextView.text = "Press Start Button"
-            Log.d("blablabla", "Press Start Button")
-            activity?.bindService(Intent(activity, WebSocketService::class.java), wsConnect, Context.BIND_AUTO_CREATE)
+        sensorInfo.observe(this, Observer {
+            firstSensorValueTextView.text = it.sensor1.toString()
+            statusRelayCheckBox.isChecked = (it.relay1)
+        })
+        logProcessWS.observe(this, Observer { msg -> logTextView.text = msg })
+        isConnectToWebSocket.observe(this, Observer { isConnect ->
+            if (isConnect) reconnectButton.visibility = View.GONE
+            else reconnectButton.visibility = View.VISIBLE
+        })
+
+        reconnectButton.setOnClickListener {
+            //logTextView.text = "Press Start Button"
+            Log.d("blablabla", "Reconnect")
+            myService?.myWebSocket()
+            //activity?.bindService(Intent(activity, WebSocketService::class.java), wsConnect, Context.BIND_AUTO_CREATE)
 
         }
+        /*
         stopButton.setOnClickListener {
             logTextView.text = "Press Stop Button"
             activity?.unbindService(wsConnect)
