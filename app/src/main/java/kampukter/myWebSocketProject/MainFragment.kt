@@ -3,22 +3,14 @@ package kampukter.myWebSocketProject
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-
-val sensorInfo = MutableLiveData<UnitSensorInfo>()
-val logProcessWS = MutableLiveData<String>()
-val isConnectToWebSocket = MutableLiveData<Boolean>()
 
 class MainFragment : Fragment() {
 
@@ -32,11 +24,19 @@ class MainFragment : Fragment() {
             wsConnect = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 
-                    // вот тут обсервить
-
                     val binder = service as WebSocketService.MyBinder
                     myService = binder.getService()
+                    binder.getStateConnect().observe(this@MainFragment, Observer { isConnect ->
+                        if (isConnect) reconnectButton.visibility = View.GONE
+                        else reconnectButton.visibility = View.VISIBLE
+                    })
+                    binder.getSensorInfo().observe(this@MainFragment, Observer {
+                        firstSensorValueTextView.text = it.sensor1.toString()
+                        statusRelayCheckBox.isChecked = (it.relay1)
+                    })
+                    binder.getLogProcessWS().observe(this@MainFragment, Observer { msg -> logTextView.text = msg })
                 }
+
                 override fun onServiceDisconnected(name: ComponentName?) {
                 }
             }
@@ -49,6 +49,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
@@ -58,41 +59,30 @@ class MainFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = "Unit Info"
         }
-
-        sensorInfo.observe(this, Observer {
-            firstSensorValueTextView.text = it.sensor1.toString()
-            statusRelayCheckBox.isChecked = (it.relay1)
-        })
-        logProcessWS.observe(this, Observer { msg -> logTextView.text = msg })
-        isConnectToWebSocket.observe(this, Observer { isConnect ->
-            if (isConnect) reconnectButton.visibility = View.GONE
-            else reconnectButton.visibility = View.VISIBLE
-        })
-
         reconnectButton.setOnClickListener {
-            //logTextView.text = "Press Start Button"
-            Log.d("blablabla", "Reconnect")
             myService?.myWebSocket()
-            //activity?.bindService(Intent(activity, WebSocketService::class.java), wsConnect, Context.BIND_AUTO_CREATE)
-
         }
-        /*
-        stopButton.setOnClickListener {
-            logTextView.text = "Press Stop Button"
-            activity?.unbindService(wsConnect)
-        }
-        */
         statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            Log.d("blablabla", "myService.setRelay1")
             myService?.setRelay1(isChecked)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("blablabla", "----------------onDestroy Fragment")
-        //activity?.unbindService(wsConnect)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_fragment_menu, menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return (when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(activity, SettingsActivity::class.java))
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+                )
     }
 
 }

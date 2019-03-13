@@ -4,52 +4,57 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
+import android.text.format.DateFormat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import kampukter.myWebSocketProject.UnitSensorApplication.Companion.ipAddressUnit
 import okhttp3.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class WebSocketService : Service() {
 
-    private var ws: WebSocket? = null
-    lateinit var client: OkHttpClient
-    private val binder = MyBinder()
+    private val isConnectToWebSocket = MutableLiveData<Boolean>()
+    private val sensorInfo = MutableLiveData<UnitSensorInfo>()
+    private val logProcessWS = MutableLiveData<String>()
 
-    private val ipAddressUnit = arrayOf("ws://109.254.66.131:81", "ws://192.168.0.82:81")
+    private var ws: WebSocket? = null
+    private lateinit var client: OkHttpClient
+    private val binder = MyBinder()
     private var selectedIP = 0
 
     override fun onBind(intent: Intent): IBinder? {
-
-        Log.d("blablabla", "onBind service")
         return binder
     }
-
     override fun onCreate() {
         super.onCreate()
-        Log.d("blablabla", "------------------- onCreate service")
-
         myWebSocket()
     }
-
     internal inner class MyBinder : Binder() {
-
-        // размести вот здесь
 
         fun getService(): WebSocketService {
             return this@WebSocketService
+        }
+        fun getStateConnect(): LiveData<Boolean> {
+            return isConnectToWebSocket
+        }
+        fun getSensorInfo(): LiveData<UnitSensorInfo> {
+            return sensorInfo
+        }
+        fun getLogProcessWS(): LiveData<String> {
+            return logProcessWS
         }
     }
 
     fun setRelay1(isCheck: Boolean) {
         if (isCheck) {
             ws?.send("Relay1On")
-            Log.v("blablabla", "Send Relay1On")
         } else {
             ws?.send("Relay1Off")
-            Log.v("blablabla", "Send Relay1Off")
         }
     }
+
     fun myWebSocket() {
         isConnectToWebSocket.postValue(true)
         client = OkHttpClient.Builder()
@@ -62,14 +67,13 @@ class WebSocketService : Service() {
         logProcessWS.postValue("Connect to " + ipAddressUnit[selectedIP])
         client.newWebSocket(request, wsListener).run {
             ws = this
-            Log.d("blablabla", "Start")
         }
         if (selectedIP == 0) selectedIP++
         else selectedIP = 0
 
     }
 
-    private class EchoWebSocketListener : WebSocketListener() {
+    inner class EchoWebSocketListener : WebSocketListener() {
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
             super.onOpen(webSocket, response)
@@ -83,25 +87,21 @@ class WebSocketService : Service() {
             t.let { errorMessage = it.toString() }
             logProcessWS.postValue("""Connect Error - $errorMessage""")
             isConnectToWebSocket.postValue(false)
-            Log.v("blablabla", """Connect WebSocket Error - $errorMessage}""")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            //Log.v("blablabla", "Receiving : $text")
             if (text == "Connected") logProcessWS.postValue("Receiving : $text")
             else {
                 val result = Gson().fromJson(text, UnitSensorInfo::class.java)
                 sensorInfo.postValue(result)
-                logProcessWS.postValue("Latest receipt from ${result.unit} in ${Date().hours}:${Date().minutes}")
+                logProcessWS.postValue("Latest receipt from ${result.unit} in ${DateFormat.format("HH:mm:ss", Date())}")
             }
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             super.onClosing(webSocket, code, reason)
-            //Log.v("blablabla", "Closing : $code / $reason")
-            logProcessWS.postValue("Closing WebSocket session : $code")
-            //webSocket!!.close(NORMAL_CLOSURE_STATUS, null)
+            webSocket.close(NORMAL_CLOSURE_STATUS, null)
         }
     }
 
