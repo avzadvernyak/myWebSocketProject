@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
 import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -32,9 +33,21 @@ class MainFragment : Fragment() {
                     })
                     binder.getSensorInfo().observe(this@MainFragment, Observer {
                         firstSensorValueTextView.text = it.sensor1.toString()
+                        statusRelayCheckBox.setOnCheckedChangeListener(null)
+                        statusAutomaticCheckBox.setOnCheckedChangeListener(null)
                         statusRelayCheckBox.isChecked = (it.relay1)
+                        statusAutomaticCheckBox.isChecked = (it.relay2)
+                        statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                            myService?.setRelay1(isChecked)
+                        }
+                        statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                            myService?.setRelay2(isChecked)
+                        }
                     })
-                    binder.getLogProcessWS().observe(this@MainFragment, Observer { msg -> logTextView.text = msg })
+                    binder.getLogProcessWS()
+                        .observe(this@MainFragment, Observer { msg -> logTextView.text = msg })
+                    binder.getInfoUnitConnect()
+                        .observe(this@MainFragment, Observer { inf -> infoUnitTextView.text = inf })
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
@@ -64,6 +77,9 @@ class MainFragment : Fragment() {
         }
         statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
             myService?.setRelay1(isChecked)
+        }
+        statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            myService?.setRelay2(isChecked)
         }
     }
 

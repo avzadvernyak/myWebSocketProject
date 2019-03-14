@@ -18,6 +18,7 @@ class WebSocketService : Service() {
     private val isConnectToWebSocket = MutableLiveData<Boolean>()
     private val sensorInfo = MutableLiveData<UnitSensorInfo>()
     private val logProcessWS = MutableLiveData<String>()
+    private val infoIpAddressUnit = MutableLiveData<String>()
 
     private var ws: WebSocket? = null
     private lateinit var client: OkHttpClient
@@ -33,18 +34,11 @@ class WebSocketService : Service() {
     }
     internal inner class MyBinder : Binder() {
 
-        fun getService(): WebSocketService {
-            return this@WebSocketService
-        }
-        fun getStateConnect(): LiveData<Boolean> {
-            return isConnectToWebSocket
-        }
-        fun getSensorInfo(): LiveData<UnitSensorInfo> {
-            return sensorInfo
-        }
-        fun getLogProcessWS(): LiveData<String> {
-            return logProcessWS
-        }
+        fun getService(): WebSocketService = this@WebSocketService
+        fun getStateConnect(): LiveData<Boolean> = isConnectToWebSocket
+        fun getSensorInfo(): LiveData<UnitSensorInfo> = sensorInfo
+        fun getLogProcessWS(): LiveData<String> = logProcessWS
+        fun getInfoUnitConnect(): LiveData<String> = infoIpAddressUnit
     }
 
     fun setRelay1(isCheck: Boolean) {
@@ -52,6 +46,13 @@ class WebSocketService : Service() {
             ws?.send("Relay1On")
         } else {
             ws?.send("Relay1Off")
+        }
+    }
+    fun setRelay2(isCheck: Boolean) {
+        if (isCheck) {
+            ws?.send("AutomaticLightOn")
+        } else {
+            ws?.send("AutomaticLightOff")
         }
     }
 
@@ -67,6 +68,7 @@ class WebSocketService : Service() {
         logProcessWS.postValue("Connect to " + ipAddressUnit[selectedIP])
         client.newWebSocket(request, wsListener).run {
             ws = this
+            infoIpAddressUnit.postValue(ipAddressUnit[selectedIP])
         }
         if (selectedIP == 0) selectedIP++
         else selectedIP = 0
@@ -98,11 +100,12 @@ class WebSocketService : Service() {
                 logProcessWS.postValue("Latest receipt from ${result.unit} in ${DateFormat.format("HH:mm:ss", Date())}")
             }
         }
-
+        /*
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             super.onClosing(webSocket, code, reason)
             webSocket.close(NORMAL_CLOSURE_STATUS, null)
         }
+        */
     }
 
     companion object {

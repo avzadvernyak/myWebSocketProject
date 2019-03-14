@@ -5,8 +5,10 @@
     <string name="firstSensorTitle">Sensor 1</string>
     <string name="secondSensorTitle">Sensor 2</string>
     <string name="statusRelayTitle">Relay 1</string>
+    <string name="statusAutomatic">Automatic</string>
 
     <string name="firstIPSettings">First IP</string>
     <string name="secondIPSettings">Second IP</string>
     <string name="errorInputIP">IP must not be empty and do not have to be equal</string>
+    <string name="connected_to_device">Connected to device</string>
 </resources>

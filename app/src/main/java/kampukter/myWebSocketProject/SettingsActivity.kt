@@ -1,6 +1,8 @@
 package kampukter.myWebSocketProject
 
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import kampukter.myWebSocketProject.UnitSensorApplication.Companion.APP_PREFERENCES
@@ -25,6 +27,9 @@ class SettingsActivity : AppCompatActivity() {
         secondIPTextInputEdit.setText(ipAddressUnit[1])
 
         saveSettingsFAB.setOnClickListener {
+
+            val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow( it .windowToken , 0)
 
             if (!firstIPTextInputEdit.text.isNullOrEmpty() && !secondIPTextInputEdit.text.isNullOrEmpty() && firstIPTextInputEdit.text != secondIPTextInputEdit.text) {
                 val settingsForSave = HashSet<String>()
