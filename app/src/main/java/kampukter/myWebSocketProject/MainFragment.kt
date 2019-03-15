@@ -8,15 +8,18 @@ import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Color
 import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
+
 
 class MainFragment : Fragment() {
 
     var myService: WebSocketService? = null
     private var wsConnect: ServiceConnection? = null
+    lateinit var series: LineGraphSeries<DataPoint>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,15 @@ class MainFragment : Fragment() {
                         .observe(this@MainFragment, Observer { msg -> logTextView.text = msg })
                     binder.getInfoUnitConnect()
                         .observe(this@MainFragment, Observer { inf -> infoUnitTextView.text = inf })
+                    binder.getUnitValue().observe(this@MainFragment, Observer { uVal ->
+                        if (uVal.size > 0) {
+                            val value = uVal.toFloatArray()
+                            val graphValue = Array(uVal.size) { i ->
+                                DataPoint(i.toDouble(), value[i].toDouble())
+                            }
+                            series.resetData(graphValue)
+                        }
+                    })
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
@@ -72,6 +84,19 @@ class MainFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = "Unit Info"
         }
+
+        series = LineGraphSeries(Array(1){DataPoint(0.0 , 0.0)})
+        graphSensor1.addSeries(series)
+
+        /*
+        Не работает
+        series.title = "°C"
+        graphSensor1.viewport.setMinX(-5.0)
+        graphSensor1.viewport.setMaxX(50.0)
+        graphSensor1.viewport.setMinY(0.0)
+        graphSensor1.viewport.setMaxY(30.0)
+        */
+
         reconnectButton.setOnClickListener {
             myService?.myWebSocket()
         }
@@ -100,5 +125,4 @@ class MainFragment : Fragment() {
         }
                 )
     }
-
 }

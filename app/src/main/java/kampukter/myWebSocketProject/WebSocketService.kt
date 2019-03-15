@@ -19,19 +19,21 @@ class WebSocketService : Service() {
     private val sensorInfo = MutableLiveData<UnitSensorInfo>()
     private val logProcessWS = MutableLiveData<String>()
     private val infoIpAddressUnit = MutableLiveData<String>()
+    private val unitValue = MutableLiveData<Deque<Float>>()
 
     private var ws: WebSocket? = null
-    private lateinit var client: OkHttpClient
     private val binder = MyBinder()
-    private var selectedIP = 0
+
 
     override fun onBind(intent: Intent): IBinder? {
         return binder
     }
+
     override fun onCreate() {
         super.onCreate()
         myWebSocket()
     }
+
     internal inner class MyBinder : Binder() {
 
         fun getService(): WebSocketService = this@WebSocketService
@@ -39,6 +41,7 @@ class WebSocketService : Service() {
         fun getSensorInfo(): LiveData<UnitSensorInfo> = sensorInfo
         fun getLogProcessWS(): LiveData<String> = logProcessWS
         fun getInfoUnitConnect(): LiveData<String> = infoIpAddressUnit
+        fun getUnitValue(): LiveData<Deque<Float>> = unitValue
     }
 
     fun setRelay1(isCheck: Boolean) {
@@ -48,6 +51,7 @@ class WebSocketService : Service() {
             ws?.send("Relay1Off")
         }
     }
+
     fun setRelay2(isCheck: Boolean) {
         if (isCheck) {
             ws?.send("AutomaticLightOn")
@@ -57,8 +61,9 @@ class WebSocketService : Service() {
     }
 
     fun myWebSocket() {
+        var selectedIP = 0
         isConnectToWebSocket.postValue(true)
-        client = OkHttpClient.Builder()
+        val client: OkHttpClient = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .build()
         val request = Request.Builder()
@@ -96,6 +101,10 @@ class WebSocketService : Service() {
             if (text == "Connected") logProcessWS.postValue("Receiving : $text")
             else {
                 val result = Gson().fromJson(text, UnitSensorInfo::class.java)
+                val myValue: Deque<Float> = LinkedList()
+                myValue.addFirst(result.sensor1).run { if (myValue.size > 30) myValue.removeLast() }
+                unitValue.postValue(myValue)
+
                 sensorInfo.postValue(result)
                 logProcessWS.postValue("Latest receipt from ${result.unit} in ${DateFormat.format("HH:mm:ss", Date())}")
             }
