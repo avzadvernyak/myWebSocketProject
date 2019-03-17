@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.format.DateFormat
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -12,6 +13,9 @@ import kampukter.myWebSocketProject.UnitSensorApplication.Companion.ipAddressUni
 import okhttp3.*
 import java.util.*
 import java.util.concurrent.TimeUnit
+import okhttp3.WebSocket
+
+
 
 class WebSocketService : Service() {
 
@@ -24,6 +28,8 @@ class WebSocketService : Service() {
     private var ws: WebSocket? = null
     private val binder = MyBinder()
 
+    val myValue: Deque<Float> = LinkedList()
+    private var selectedIP = 0
 
     override fun onBind(intent: Intent): IBinder? {
         return binder
@@ -32,6 +38,12 @@ class WebSocketService : Service() {
     override fun onCreate() {
         super.onCreate()
         myWebSocket()
+    }
+
+    override fun onDestroy() {
+        Log.d("blablabla", "Destroy service")
+        super.onDestroy()
+
     }
 
     internal inner class MyBinder : Binder() {
@@ -61,7 +73,7 @@ class WebSocketService : Service() {
     }
 
     fun myWebSocket() {
-        var selectedIP = 0
+
         isConnectToWebSocket.postValue(true)
         val client: OkHttpClient = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
@@ -70,7 +82,7 @@ class WebSocketService : Service() {
             .url(ipAddressUnit[selectedIP])
             .build()
         val wsListener = EchoWebSocketListener()
-        logProcessWS.postValue("Connect to " + ipAddressUnit[selectedIP])
+        logProcessWS.postValue("Connecting to " + ipAddressUnit[selectedIP])
         client.newWebSocket(request, wsListener).run {
             ws = this
             infoIpAddressUnit.postValue(ipAddressUnit[selectedIP])
@@ -84,7 +96,7 @@ class WebSocketService : Service() {
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
             super.onOpen(webSocket, response)
-            logProcessWS.postValue("Open WebSocket")
+            logProcessWS.postValue("Opened WebSocket")
             isConnectToWebSocket.postValue(true)
         }
 
@@ -92,32 +104,28 @@ class WebSocketService : Service() {
             super.onFailure(webSocket, t, response)
             var errorMessage: String
             t.let { errorMessage = it.toString() }
-            logProcessWS.postValue("""Connect Error - $errorMessage""")
+            logProcessWS.postValue("""Connection Error - $errorMessage""")
             isConnectToWebSocket.postValue(false)
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
+            Log.d("blablabla", "Receiving ...")
             if (text == "Connected") logProcessWS.postValue("Receiving : $text")
             else {
                 val result = Gson().fromJson(text, UnitSensorInfo::class.java)
-                val myValue: Deque<Float> = LinkedList()
-                myValue.addFirst(result.sensor1).run { if (myValue.size > 30) myValue.removeLast() }
+
+                myValue.addLast(result.sensor1).run { if (myValue.size > 20) myValue.removeFirst() }
                 unitValue.postValue(myValue)
 
                 sensorInfo.postValue(result)
                 logProcessWS.postValue("Latest receipt from ${result.unit} in ${DateFormat.format("HH:mm:ss", Date())}")
             }
         }
-        /*
-        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            super.onClosing(webSocket, code, reason)
-            webSocket.close(NORMAL_CLOSURE_STATUS, null)
-        }
-        */
-    }
 
-    companion object {
-        private const val NORMAL_CLOSURE_STATUS = 1000
+        override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
+            webSocket?.close(1000, null)
+            Log.d("blablabla", "webSocket close")
+        }
     }
 }

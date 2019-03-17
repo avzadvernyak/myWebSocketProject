@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import com.jjoe64.graphview.series.DataPoint
@@ -54,9 +55,16 @@ class MainFragment : Fragment() {
                     binder.getUnitValue().observe(this@MainFragment, Observer { uVal ->
                         if (uVal.size > 0) {
                             val value = uVal.toFloatArray()
+                            Log.d("blablabla", "Принято в активити-setRelay1  ${uVal.size.toString()}")
                             val graphValue = Array(uVal.size) { i ->
-                                DataPoint(i.toDouble(), value[i].toDouble())
+                                 DataPoint(i.toDouble(), value[i].toDouble())
                             }
+                            /*
+                            val graphValue = Array(20) { i ->
+                                if(i <= uVal.size) DataPoint(i.toDouble(), value[i].toDouble())
+                                else DataPoint(i.toDouble(), 0.0)
+                            }
+                            */
                             series.resetData(graphValue)
                         }
                     })
