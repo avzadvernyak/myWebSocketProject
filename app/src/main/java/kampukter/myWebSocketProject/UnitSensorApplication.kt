@@ -8,6 +8,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class UnitSensorApplication : Application() {
 
@@ -16,6 +18,12 @@ class UnitSensorApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidContext(this@UnitSensorApplication)
+            modules(APPLICATION_MODULE)
+        }
+
         val appSharedPreferences = getSharedPreferences(APP_PREFERENCES, AppCompatActivity.MODE_PRIVATE)
         if (appSharedPreferences.contains(APP_PREFERENCES_IPADDR)) {
             appSharedPreferences.getStringSet(APP_PREFERENCES_IPADDR, null)?.let {

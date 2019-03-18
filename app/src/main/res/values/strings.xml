@@ -11,4 +11,5 @@
     <string name="secondIPSettings">Second IP</string>
     <string name="errorInputIP">IP must not be empty or same</string>
     <string name="connected_to_device">Connected to device</string>
+    <string name="titleTemperature">°C</string>
 </resources>

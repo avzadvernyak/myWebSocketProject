@@ -1,81 +1,23 @@
 package kampukter.myWebSocketProject
 
-import android.content.ComponentName
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainFragment : Fragment() {
 
+    private val mainViewModel by viewModel<MainViewModel>()
+
     var myService: WebSocketService? = null
-    private var wsConnect: ServiceConnection? = null
     lateinit var series: LineGraphSeries<DataPoint>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (wsConnect == null) {
-            wsConnect = object : ServiceConnection {
-                override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-
-                    val binder = service as WebSocketService.MyBinder
-                    myService = binder.getService()
-                    binder.getStateConnect().observe(this@MainFragment, Observer { isConnect ->
-                        if (isConnect) reconnectButton.visibility = View.GONE
-                        else reconnectButton.visibility = View.VISIBLE
-                    })
-                    binder.getSensorInfo().observe(this@MainFragment, Observer {
-                        firstSensorValueTextView.text = it.sensor1.toString()
-                        statusRelayCheckBox.setOnCheckedChangeListener(null)
-                        statusAutomaticCheckBox.setOnCheckedChangeListener(null)
-                        statusRelayCheckBox.isChecked = (it.relay1)
-                        statusAutomaticCheckBox.isChecked = (it.relay2)
-                        statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                            myService?.setRelay1(isChecked)
-                        }
-                        statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                            myService?.setRelay2(isChecked)
-                        }
-                    })
-                    binder.getLogProcessWS()
-                        .observe(this@MainFragment, Observer { msg -> logTextView.text = msg })
-                    binder.getInfoUnitConnect()
-                        .observe(this@MainFragment, Observer { inf -> infoUnitTextView.text = inf })
-                    binder.getUnitValue().observe(this@MainFragment, Observer { uVal ->
-                        if (uVal.size > 0) {
-                            val value = uVal.toFloatArray()
-                            Log.d("blablabla", "Принято в активити-setRelay1  ${uVal.size.toString()}")
-                            val graphValue = Array(uVal.size) { i ->
-                                 DataPoint(i.toDouble(), value[i].toDouble())
-                            }
-                            /*
-                            val graphValue = Array(20) { i ->
-                                if(i <= uVal.size) DataPoint(i.toDouble(), value[i].toDouble())
-                                else DataPoint(i.toDouble(), 0.0)
-                            }
-                            */
-                            series.resetData(graphValue)
-                        }
-                    })
-                }
-
-                override fun onServiceDisconnected(name: ComponentName?) {
-                }
-            }
-            activity?.bindService(Intent(activity, WebSocketService::class.java), wsConnect!!, Context.BIND_AUTO_CREATE)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,26 +35,65 @@ class MainFragment : Fragment() {
             title = "Unit Info"
         }
 
-        series = LineGraphSeries(Array(1){DataPoint(0.0 , 0.0)})
-        graphSensor1.addSeries(series)
+        mainViewModel.sensorInfo.observe(this, Observer {
+            firstSensorValueTextView.text = it.sensor1.toString()
+            statusRelayCheckBox.setOnCheckedChangeListener(null)
+            statusAutomaticCheckBox.setOnCheckedChangeListener(null)
+            statusRelayCheckBox.isChecked = (it.relay1)
+            statusAutomaticCheckBox.isChecked = (it.relay2)
+            statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                mainViewModel.setStatusRelay(isChecked)
+            }
+            statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                mainViewModel.setStatusAutomatic(isChecked)
+            }
+        })
+        mainViewModel.unitValue.observe(this, Observer { uVal ->
+            if (uVal.size > 0) {
+                val value = uVal.toFloatArray()
+                val graphValue = Array(20) { i ->
+                    if (i - (19 - uVal.size) > 0) DataPoint(
+                        i.toDouble(),
+                        value[i - (20 - uVal.size)].toDouble()
+                    )
+                    else DataPoint(i.toDouble(), 0.0)
+                }
+                series.resetData(graphValue)
+            }
+        })
+        mainViewModel.isConnect.observe(this, Observer { isConnect ->
+            if (isConnect) reconnectButton.visibility = View.GONE
+            else reconnectButton.visibility = View.VISIBLE
+        })
+        mainViewModel.logProcess.observe(this, Observer { msg -> logTextView.text = msg })
+        mainViewModel.infoIpAddressUnit.observe(this, Observer { inf -> infoUnitTextView.text = inf })
 
-        /*
-        Не работает
-        series.title = "°C"
-        graphSensor1.viewport.setMinX(-5.0)
-        graphSensor1.viewport.setMaxX(50.0)
-        graphSensor1.viewport.setMinY(0.0)
-        graphSensor1.viewport.setMaxY(30.0)
-        */
+
+
+        series = LineGraphSeries(Array(20) { DataPoint(0.0, 0.0) })
+        graphSensor1.addSeries(series)
+        graphSensor1.title = "Sensor #1"
+        // set manual X bounds
+        graphSensor1.viewport.isXAxisBoundsManual = true
+        graphSensor1.viewport.setMinX(0.0)
+        graphSensor1.viewport.setMaxX(20.0)
+        graphSensor1.gridLabelRenderer.isHorizontalLabelsVisible = false
+        // set manual Y bounds
+        graphSensor1.viewport.isYAxisBoundsManual = true
+        graphSensor1.viewport.setMinY(-25.0)
+        graphSensor1.viewport.setMaxY(40.0)
+        graphSensor1.gridLabelRenderer.verticalAxisTitle = getString(R.string.titleTemperature)
+
+
 
         reconnectButton.setOnClickListener {
-            myService?.myWebSocket()
+            mainViewModel.sendConnectionControlEvent()
         }
         statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            myService?.setRelay1(isChecked)
+            mainViewModel.setStatusRelay(isChecked)
         }
         statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            myService?.setRelay2(isChecked)
+            mainViewModel.setStatusAutomatic(isChecked)
         }
     }
 
