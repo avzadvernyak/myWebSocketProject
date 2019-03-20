@@ -1,8 +1,9 @@
-package kampukter.myWebSocketProject
+package kampukter.myWebSocketProject.UI
 
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import kampukter.myWebSocketProject.UI.MainFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

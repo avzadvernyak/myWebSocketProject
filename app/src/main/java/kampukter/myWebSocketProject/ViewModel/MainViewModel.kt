@@ -1,6 +1,7 @@
-package kampukter.myWebSocketProject
+package kampukter.myWebSocketProject.ViewModel
 
 import androidx.lifecycle.ViewModel
+import kampukter.myWebSocketProject.Repository.WebSocketRepository
 
 class MainViewModel(private val webSocketRepository: WebSocketRepository) : ViewModel() {
 

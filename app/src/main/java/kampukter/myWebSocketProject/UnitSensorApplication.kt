@@ -42,13 +42,15 @@ class UnitSensorApplication : Application() {
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             fun onBackground() {
+                stopService(serviceIntent)
+                /*
                 mRunnable = Runnable {
                     stopService(serviceIntent)
                 }
                 mHandler.postDelayed(
                     mRunnable, // Runnable
                     30000 // Delay in milliseconds
-                )
+                )*/
             }
 
         })

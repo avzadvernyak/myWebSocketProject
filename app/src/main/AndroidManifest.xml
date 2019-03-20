@@ -14,19 +14,28 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning"
             android:name=".UnitSensorApplication">
-        <activity android:name=".MainActivity">
+        <activity android:name=".UI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <service android:name=".WebSocketService" > </service>
-        <activity android:name=".SettingsActivity"
-                  android:parentActivityName=".MainActivity"
+        <activity android:name=".UI.SettingsActivity"
+                  android:parentActivityName=".UI.MainActivity"
                   android:label="SettingsActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".MainActivity">
+                    android:value=".UI.MainActivity">
+            </meta-data>
+        </activity>
+        <activity android:name=".UI.Sensor1FullScreenGraph"
+                  android:parentActivityName=".UI.MainActivity"
+                  android:label="SettingsActivity"
+                  android:screenOrientation="sensorLandscape">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".UI.MainActivity">
             </meta-data>
         </activity>
     </application>

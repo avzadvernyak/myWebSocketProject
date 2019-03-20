@@ -1,14 +1,18 @@
-package kampukter.myWebSocketProject
+package kampukter.myWebSocketProject.UI
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
+import android.graphics.Color.LTGRAY
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import kampukter.myWebSocketProject.R
+import kampukter.myWebSocketProject.ViewModel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -16,7 +20,6 @@ class MainFragment : Fragment() {
 
     private val mainViewModel by viewModel<MainViewModel>()
 
-    var myService: WebSocketService? = null
     lateinit var series: LineGraphSeries<DataPoint>
 
     override fun onCreateView(
@@ -62,8 +65,13 @@ class MainFragment : Fragment() {
             }
         })
         mainViewModel.isConnect.observe(this, Observer { isConnect ->
-            if (isConnect) reconnectButton.visibility = View.GONE
-            else reconnectButton.visibility = View.VISIBLE
+            if (isConnect) {
+                reconnectButton.visibility = View.GONE
+                //graphSensor1.visibility = View.VISIBLE
+            } else {
+                reconnectButton.visibility = View.VISIBLE
+                //graphSensor1.visibility = View.GONE
+            }
         })
         mainViewModel.logProcess.observe(this, Observer { msg -> logTextView.text = msg })
         mainViewModel.infoIpAddressUnit.observe(this, Observer { inf -> infoUnitTextView.text = inf })
@@ -72,7 +80,12 @@ class MainFragment : Fragment() {
 
         series = LineGraphSeries(Array(20) { DataPoint(0.0, 0.0) })
         graphSensor1.addSeries(series)
-        graphSensor1.title = "Sensor #1"
+
+        graphSensor1.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+        graphSensor1.setBackgroundColor(LTGRAY)
+        graphSensor1.setOnClickListener {
+            startActivity(Intent(activity, Sensor1FullScreenGraph::class.java))
+        }
         // set manual X bounds
         graphSensor1.viewport.isXAxisBoundsManual = true
         graphSensor1.viewport.setMinX(0.0)
@@ -82,7 +95,7 @@ class MainFragment : Fragment() {
         graphSensor1.viewport.isYAxisBoundsManual = true
         graphSensor1.viewport.setMinY(-25.0)
         graphSensor1.viewport.setMaxY(40.0)
-        graphSensor1.gridLabelRenderer.verticalAxisTitle = getString(R.string.titleTemperature)
+        graphSensor1.gridLabelRenderer.isVerticalLabelsVisible = false
 
 
 

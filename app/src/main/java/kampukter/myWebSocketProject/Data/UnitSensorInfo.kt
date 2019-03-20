@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject
+package kampukter.myWebSocketProject.Data
 
 data class UnitSensorInfo (
     val unit: String,

@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
+import kampukter.myWebSocketProject.Data.UnitSensorInfo
+import kampukter.myWebSocketProject.Repository.WebSocketRepository
 import kampukter.myWebSocketProject.UnitSensorApplication.Companion.ipAddressUnit
 import okhttp3.*
 import java.util.*
@@ -97,6 +99,7 @@ class WebSocketService : LifecycleService() {
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
             Log.d("blablabla", "Receiving ...")
+            webSocketRepository.saveIsConnect(true)
             if (text == "Connected") webSocketRepository.saveLogProcess("Receiving : $text")
             else {
                 val result = Gson().fromJson(text, UnitSensorInfo::class.java)
