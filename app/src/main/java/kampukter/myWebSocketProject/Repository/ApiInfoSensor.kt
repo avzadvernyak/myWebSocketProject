@@ -9,8 +9,11 @@ import retrofit2.http.Query
 
 interface ApiInfoSensor {
     @GET("get_info.php?")
-    fun getItems(@Query("sensor") unit: String, searchDate: String): Call<List<InfoSensor>>
-
+    fun getInfoSensorPeriod(
+        @Query("sensor") unit: String,
+        @Query("period_b") beginDate: String,
+        @Query("period_e") endDate: String
+    ): Call<List<InfoSensor>>
 
     companion object Factory {
         val BASE_URL = "http://orbis.in.ua/api/"

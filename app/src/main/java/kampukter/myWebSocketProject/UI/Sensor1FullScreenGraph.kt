@@ -4,18 +4,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.R
 import kampukter.myWebSocketProject.ViewModel.MainViewModel
 import kotlinx.android.synthetic.main.sensor1_full_screen_graph_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class Sensor1FullScreenGraph : AppCompatActivity() {
 
     private val mainViewModel by viewModel<MainViewModel>()
     lateinit var series: LineGraphSeries<DataPoint>
-    var lenArray = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,29 +30,30 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         Log.d("blablabla", "START Sensor1FullScreenGraph")
-
-        mainViewModel.sensorInfo.observe(this, Observer { value ->
-            series.appendData(DataPoint(lenArray++,value.sensor1.toDouble()),true,100)
-
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        val currentDay = Date()
+        val strDateBegin = format.format(Date(currentDay.time - (1000*60*60*24)))
+        val strDateEnd = format.format(currentDay)
+        mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
+        mainViewModel.infoSensor.observe(this, Observer { infoSensorList ->
+            val value = infoSensorList.toTypedArray()
+            val graphValue = Array(value.size) { i ->
+                DataPoint(Date(value[i].date * 1000L), value[i].value.toDouble())
+            }
+            series.resetData(graphValue)
+            graphSensor1FS.viewport.setMinX(value.first().date * 1000L.toDouble())
+            graphSensor1FS.viewport.setMaxX(value.last().date * 1000L.toDouble())
+            titleTextView.text=Date(value.first().date * 1000L).toString()+"\n"+Date(value.last().date * 1000L).toString()
         })
         series = LineGraphSeries()
         graphSensor1FS.addSeries(series)
-
         graphSensor1FS.title = "Sensor #1"
-
-
-        // set manual X bounds
-        graphSensor1FS.viewport.isXAxisBoundsManual = true
-        graphSensor1FS.viewport.setMinX(0.0)
-        graphSensor1FS.viewport.setMaxX(100.0)
-        //graphSensor1FS.gridLabelRenderer.setHumanRounding(false)
+        graphSensor1FS.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(this)
         graphSensor1FS.gridLabelRenderer.isHorizontalLabelsVisible = false
-        // set manual Y bounds
-        graphSensor1FS.viewport.isYAxisBoundsManual = true
-        graphSensor1FS.viewport.setMinY(-25.0)
-        graphSensor1FS.viewport.setMaxY(40.0)
+        graphSensor1FS.viewport.isXAxisBoundsManual = true
+        graphSensor1FS.viewport.isYAxisBoundsManual = false
+        graphSensor1FS.viewport.setMinY(0.0)
+        graphSensor1FS.viewport.setMaxY(25.0)
         graphSensor1FS.gridLabelRenderer.verticalAxisTitle = getString(R.string.titleTemperature)
-
-
     }
 }

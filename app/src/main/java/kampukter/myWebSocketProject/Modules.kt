@@ -9,5 +9,5 @@ import org.koin.dsl.module
 val APPLICATION_MODULE = module {
     single { WebSocketRepository() }
     single { InfoSensorRepository() }
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
 }
