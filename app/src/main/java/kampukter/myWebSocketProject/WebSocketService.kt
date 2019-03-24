@@ -94,6 +94,7 @@ class WebSocketService : LifecycleService() {
             t.let { errorMessage = it.toString() }
             webSocketRepository.saveLogProcess("""Connection Error - $errorMessage""")
             webSocketRepository.saveIsConnect(false)
+            webSocket.cancel()
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
