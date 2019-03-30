@@ -2,8 +2,9 @@
     <string name="app_name">My WebSocket Project</string>
     <string name="reconnectButtonTitle">Reconnect</string>
     <string name="logTextView">Log</string>
-    <string name="firstSensorTitle">Sensor 1</string>
-    <string name="secondSensorTitle">Sensor 2</string>
+    <string name="firstSensorTitle">Temperature</string>
+    <string name="secondSensorTitle">Humidity</string>
+    <string name="thirdSensorTitle">Pressure</string>
     <string name="statusRelayTitle">Manual switching</string>
     <string name="statusAutomatic">Automatic mode</string>
 
@@ -14,4 +15,10 @@
     <string name="titleTemperature">°C</string>
 
     <string name="titleGraphActivity">Graphics</string>
+    <string name="periodView">%1$s - %2$s</string>
+    <string name="formatDT">dd/MM HH:mm</string>
+
+    <string name="maxValuePeriod"> Max value %1$s appeared at %2$s</string>
+    <string name="minValuePeriod"> Min value %1$s appeared at %2$s</string>
+    <string name="averageValuePeriod"> Average  value %1$s </string>
 </resources>

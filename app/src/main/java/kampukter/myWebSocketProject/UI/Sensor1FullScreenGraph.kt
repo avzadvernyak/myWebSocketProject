@@ -1,6 +1,7 @@
 package kampukter.myWebSocketProject.UI
 
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -20,7 +21,7 @@ import java.util.*
 class Sensor1FullScreenGraph : AppCompatActivity() {
 
     private val mainViewModel by viewModel<MainViewModel>()
-    lateinit var series: LineGraphSeries<DataPoint>
+    private lateinit var series: LineGraphSeries<DataPoint>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +51,11 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
                     graphSensor1FS.viewport.setMaxX(value.last().date * 1000L.toDouble())
                     //graphSensor1FS.gridLabelRenderer.numHorizontalLabels = 6
                     //graphSensor1FS.gridLabelRenderer.isHorizontalLabelsVisible = true
-                    titleTextView.text =
-                        Date(value.first().date * 1000L).toString() + "\n" + Date(value.last().date * 1000L).toString()
+
+                    val begTime = DateFormat.format(getString(R.string.formatDT), value.first().date * 1000L)
+                    val endTime = DateFormat.format(getString(R.string.formatDT), value.last().date * 1000L)
+                    titleTextView.text = getString(R.string.periodView,begTime.toString(),endTime.toString())
+
                 }
                 is ResultInfoSensor.OtherError -> {
                     Log.d("blablabla", "Other Error" + infoSensorList.tError)

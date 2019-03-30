@@ -38,6 +38,15 @@
                     android:value=".UI.MainActivity">
             </meta-data>
         </activity>
+        <activity android:name=".UI.Sensor1Information"
+                  android:parentActivityName=".UI.MainActivity"
+                  android:label="Sensor1Information"
+        >
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".UI.MainActivity">
+            </meta-data>
+        </activity>
     </application>
 
 </manifest>

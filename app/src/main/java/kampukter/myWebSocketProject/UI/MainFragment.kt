@@ -5,22 +5,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
-import android.graphics.Color.LTGRAY
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-import com.jjoe64.graphview.GridLabelRenderer
-import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
 import kampukter.myWebSocketProject.R
 import kampukter.myWebSocketProject.ViewModel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+private const val KEY_SELECTED_ITEMS = "KEY_SELECTED_ITEMS"
 
 class MainFragment : Fragment() {
 
     private val mainViewModel by viewModel<MainViewModel>()
-
-    lateinit var series: LineGraphSeries<DataPoint>
+    private var isShowTable = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,8 +33,35 @@ class MainFragment : Fragment() {
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbarUnitState)
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = "Unit Info"
+            mainViewModel.infoIpAddressUnit.observe(this@MainFragment, Observer { inf ->
+                subtitle = inf
+            })
+        }
+        savedInstanceState?.getBoolean(KEY_SELECTED_ITEMS)?.let { value ->
+            isShowTable = value
         }
 
+        if (isShowTable) {
+            is_show_table_fab.show()
+            is_show_graph_fab.hide()
+        } else {
+            is_show_graph_fab.show()
+            is_show_table_fab.hide()
+        }
+
+        bottom_sensor_navigation.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.action_sensor1 -> {
+                    if (!isShowTable) startActivity(Intent(activity, Sensor1FullScreenGraph::class.java))
+                    else startActivity(Intent(activity, Sensor1Information::class.java))
+                }
+                R.id.action_sensor2 -> {
+                }
+                R.id.action_sensor3 -> {
+                }
+            }
+            return@setOnNavigationItemSelectedListener true
+        }
         mainViewModel.sensorInfo.observe(this, Observer {
             firstSensorValueTextView.text = it.sensor1.toString()
             statusRelayCheckBox.setOnCheckedChangeListener(null)
@@ -51,19 +75,6 @@ class MainFragment : Fragment() {
                 mainViewModel.setStatusAutomatic(isChecked)
             }
         })
-        mainViewModel.unitValue.observe(this, Observer { uVal ->
-            if (uVal.size > 0) {
-                val value = uVal.toFloatArray()
-                val graphValue = Array(20) { i ->
-                    if (i - (19 - uVal.size) > 0) DataPoint(
-                        i.toDouble(),
-                        value[i - (20 - uVal.size)].toDouble()
-                    )
-                    else DataPoint(i.toDouble(), 0.0)
-                }
-                series.resetData(graphValue)
-            }
-        })
         mainViewModel.isConnect.observe(this, Observer { isConnect ->
             if (isConnect) {
                 reconnectButton.visibility = View.GONE
@@ -74,40 +85,25 @@ class MainFragment : Fragment() {
             }
         })
         mainViewModel.logProcess.observe(this, Observer { msg -> logTextView.text = msg })
-        mainViewModel.infoIpAddressUnit.observe(this, Observer { inf -> infoUnitTextView.text = inf })
-
-
-
-        series = LineGraphSeries(Array(20) { DataPoint(0.0, 0.0) })
-        graphSensor1.addSeries(series)
-
-        graphSensor1.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
-        graphSensor1.setBackgroundColor(LTGRAY)
-        graphSensor1.setOnClickListener {
-            startActivity(Intent(activity, Sensor1FullScreenGraph::class.java))
-        }
-        // set manual X bounds
-        graphSensor1.viewport.isXAxisBoundsManual = true
-        graphSensor1.viewport.setMinX(0.0)
-        graphSensor1.viewport.setMaxX(20.0)
-        graphSensor1.gridLabelRenderer.isHorizontalLabelsVisible = false
-        // set manual Y bounds
-        graphSensor1.viewport.isYAxisBoundsManual = true
-        graphSensor1.viewport.setMinY(-25.0)
-        graphSensor1.viewport.setMaxY(40.0)
-        graphSensor1.gridLabelRenderer.isVerticalLabelsVisible = false
-
 
 
         reconnectButton.setOnClickListener {
             mainViewModel.sendConnectionControlEvent()
         }
-        statusRelayCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            mainViewModel.setStatusRelay(isChecked)
+        is_show_table_fab.setOnClickListener {
+            isShowTable = false
+            is_show_table_fab.hide()
+            is_show_graph_fab.show()
         }
-        statusAutomaticCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            mainViewModel.setStatusAutomatic(isChecked)
+        is_show_graph_fab.setOnClickListener {
+            isShowTable = true
+            is_show_graph_fab.hide()
+            is_show_table_fab.show()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(KEY_SELECTED_ITEMS, isShowTable)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

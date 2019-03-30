@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_sensor1"
+          android:title="@string/firstSensorTitle"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_temperature"
+          android:orderInCategory="11"/>
+    <item android:id="@+id/action_sensor2"
+          android:title="@string/secondSensorTitle"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_humidity"
+          android:orderInCategory="12"/>
+    <item android:id="@+id/action_sensor3"
+          android:title="@string/thirdSensorTitle"
+          app:showAsAction="always"
+          android:icon="@drawable/ic_pressure"
+          android:orderInCategory="13"/>
+</menu>
