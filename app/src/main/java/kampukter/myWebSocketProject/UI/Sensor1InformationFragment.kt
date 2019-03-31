@@ -1,5 +1,6 @@
 package kampukter.myWebSocketProject.UI
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -51,10 +52,9 @@ class Sensor1InformationFragment : Fragment() {
 
 
         val format = SimpleDateFormat("yyyy-MM-dd")
-        val currentDay = Date()
+        var currentDay = Date()
         val strDateEnd = format.format(currentDay)
 
-        dateTextView.text = DateFormat.format("dd/MM/yyyy", currentDay)
 
         mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateEnd, strDateEnd))
 
@@ -62,9 +62,10 @@ class Sensor1InformationFragment : Fragment() {
             when (infoSensorList) {
                 is ResultInfoSensor.Success -> {
 
+                    dateTextView.text = getString(R.string.dateInfoView, DateFormat.format("dd/MM/yyyy", currentDay))
                     val dateMax =
                         infoSensorList.infoSensor.maxBy { it.value }?.date?.let { time ->
-                            DateFormat.format("HH:mm", time*1000L)
+                            DateFormat.format("HH:mm", time * 1000L)
                         }
                     maxTextView.text = getString(
                         R.string.maxValuePeriod,
@@ -74,7 +75,7 @@ class Sensor1InformationFragment : Fragment() {
 
                     val dateMin =
                         infoSensorList.infoSensor.minBy { it.value }?.date?.let { time ->
-                            DateFormat.format("HH:mm", time*1000L)
+                            DateFormat.format("HH:mm", time * 1000L)
                         }
                     minTextView.text = getString(
                         R.string.minValuePeriod,
@@ -96,6 +97,29 @@ class Sensor1InformationFragment : Fragment() {
                 }
             }
         })
+        calendarFAB.setOnClickListener {
+
+
+            val c = Calendar.getInstance()
+            val dateSetListener = DatePickerDialog.OnDateSetListener { _,
+                                                                       year, monthOfYear, dayOfMonth ->
+                c.set(Calendar.YEAR, year)
+                c.set(Calendar.MONTH, monthOfYear)
+                c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                currentDay = c.time
+                val searchDate = format.format(c.time)
+                Log.d("blablabla", searchDate)
+                mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", searchDate, searchDate))
+            }
+            //val pickerFragment = DatePickerFragment.create(dateSetListener)
+            //pickerFragment.setOnDateSetListener { blablabla }
+
+            fragmentManager?.let {
+                DatePickerFragment.create(dateSetListener)
+                .show(it, "datePicker") }
+
+        }
     }
 
 }

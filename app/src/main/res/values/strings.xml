@@ -18,7 +18,8 @@
     <string name="periodView">%1$s - %2$s</string>
     <string name="formatDT">dd/MM HH:mm</string>
 
-    <string name="maxValuePeriod"> Max value %1$s appeared at %2$s</string>
-    <string name="minValuePeriod"> Min value %1$s appeared at %2$s</string>
-    <string name="averageValuePeriod"> Average  value %1$s </string>
+    <string name="dateInfoView">Information of %1$s</string>
+    <string name="maxValuePeriod"> Max value %1$s°C appeared at %2$s</string>
+    <string name="minValuePeriod"> Min value %1$s°C appeared at %2$s</string>
+    <string name="averageValuePeriod"> Average  value %1$s°C </string>
 </resources>
