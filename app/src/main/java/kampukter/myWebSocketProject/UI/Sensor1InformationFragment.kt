@@ -1,6 +1,7 @@
 package kampukter.myWebSocketProject.UI
 
 import android.app.DatePickerDialog
+import android.content.res.Resources
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.Data.ResultInfoSensor
 import kampukter.myWebSocketProject.R
@@ -93,6 +95,12 @@ class Sensor1InformationFragment : Fragment() {
                     Log.d("blablabla", "Other Error" + infoSensorList.tError)
                 }
                 is ResultInfoSensor.EmptyResponse -> {
+                    Snackbar.make(
+                        sensor1_fragment,
+                        getString(R.string.noDataMessage, DateFormat.format("dd/MM/yyyy", currentDay)),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+
                     Log.d("blablabla", "infoSensorList is Empty")
                 }
             }
@@ -109,16 +117,15 @@ class Sensor1InformationFragment : Fragment() {
 
                 currentDay = c.time
                 val searchDate = format.format(c.time)
-                Log.d("blablabla", searchDate)
                 mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", searchDate, searchDate))
             }
-            //val pickerFragment = DatePickerFragment.create(dateSetListener)
-            //pickerFragment.setOnDateSetListener { blablabla }
 
             fragmentManager?.let {
                 DatePickerFragment.create(dateSetListener)
-                .show(it, "datePicker") }
-
+                    .show(it, "datePicker")
+            }
+                //.apply { DatePickerFragment.hideYear() }
+            //DatePickerFragment.hideYear()
         }
     }
 

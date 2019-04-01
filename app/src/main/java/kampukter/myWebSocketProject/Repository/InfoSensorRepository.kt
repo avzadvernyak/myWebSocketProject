@@ -18,8 +18,12 @@ class InfoSensorRepository {
         call.enqueue(object : Callback<List<InfoSensor>> {
             override fun onResponse(call: Call<List<InfoSensor>>, response: retrofit2.Response<List<InfoSensor>>) {
                 //response?.body().let { result.postValue(response?.body()) }
-                if (response.isSuccessful) response.body()?.let { result.postValue(ResultInfoSensor.Success(it)) }
-                else result.postValue(ResultInfoSensor.EmptyResponse)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body?.first()?.date != 0L)
+                        body?.let { result.postValue(ResultInfoSensor.Success(it)) }
+                    else result.postValue(ResultInfoSensor.EmptyResponse)
+                } else result.postValue(ResultInfoSensor.OtherError("isSuccessful is false"))
             }
 
             override fun onFailure(call: Call<List<InfoSensor>>, t: Throwable) {
