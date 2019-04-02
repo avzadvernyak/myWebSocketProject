@@ -59,11 +59,11 @@ class Sensor1InformationFragment : Fragment() {
 
 
         mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateEnd, strDateEnd))
-
+        progressBar.visibility = View.VISIBLE
         mainViewModel.infoSensor.observe(this, Observer { infoSensorList ->
             when (infoSensorList) {
                 is ResultInfoSensor.Success -> {
-
+                    progressBar.visibility = View.GONE
                     dateTextView.text = getString(R.string.dateInfoView, DateFormat.format("dd/MM/yyyy", currentDay))
                     val dateMax =
                         infoSensorList.infoSensor.maxBy { it.value }?.date?.let { time ->
@@ -92,9 +92,11 @@ class Sensor1InformationFragment : Fragment() {
                     infoSensor1Adapter?.setList(infoSensorList.infoSensor)
                 }
                 is ResultInfoSensor.OtherError -> {
+                    progressBar.visibility = View.GONE
                     Log.d("blablabla", "Other Error" + infoSensorList.tError)
                 }
                 is ResultInfoSensor.EmptyResponse -> {
+                    progressBar.visibility = View.GONE
                     Snackbar.make(
                         sensor1_fragment,
                         getString(R.string.noDataMessage, DateFormat.format("dd/MM/yyyy", currentDay)),
@@ -118,14 +120,13 @@ class Sensor1InformationFragment : Fragment() {
                 currentDay = c.time
                 val searchDate = format.format(c.time)
                 mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", searchDate, searchDate))
+                progressBar.visibility = View.VISIBLE
             }
 
             fragmentManager?.let {
                 DatePickerFragment.create(dateSetListener)
                     .show(it, "datePicker")
             }
-                //.apply { DatePickerFragment.hideYear() }
-            //DatePickerFragment.hideYear()
         }
     }
 

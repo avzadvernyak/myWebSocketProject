@@ -19,8 +19,7 @@ class MonthDatePickerFragment: DialogFragment(), DatePickerDialog.OnDateSetListe
         super.onStart()
         val fieldDay =
             datePickerDialog.findViewById<View>(
-                Resources.getSystem()
-                    .getIdentifier("android:id/day", null, null)
+                Resources.getSystem().getIdentifier("android:id/day", null, null)
             )
         if (fieldDay != null) fieldDay.visibility = View.GONE
     }

@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.view.*
 
+private const val KEY_SELECTED_PERIOD = "KEY_SELECTED_PERIOD"
 
 class Sensor1FullScreenGraph : AppCompatActivity() {
 
@@ -27,6 +28,10 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
 
     private val format = SimpleDateFormat("yyyy-MM-dd")
     private var currentDay = Date()
+
+    private var strDateBegin: String = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24)))
+    private var strDateEnd: String = format.format(currentDay)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,13 +42,19 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
 
         Log.d("blablabla", "START Sensor1FullScreenGraph")
 
-        val strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24)))
-        val strDateEnd = format.format(currentDay)
-        //val strDateBegin =strDateEnd
+        savedInstanceState?.let { bundle ->
+            bundle.getStringArray(KEY_SELECTED_PERIOD)?.let { saveDate ->
+                strDateBegin = saveDate[0]
+                strDateEnd = saveDate[1]
+            }
+        }
+
         mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
+        progressBar.visibility = View.VISIBLE
         mainViewModel.infoSensor.observe(this, Observer { infoSensorList ->
             when (infoSensorList) {
                 is ResultInfoSensor.Success -> {
+                    progressBar.visibility = View.GONE
                     val value = infoSensorList.infoSensor
                     val graphValue = Array(value.size) { i ->
                         DataPoint(Date(value[i].date * 1000L), value[i].value.toDouble())
@@ -61,10 +72,12 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
 
                 }
                 is ResultInfoSensor.OtherError -> {
+                    progressBar.visibility = View.GONE
                     Log.d("blablabla", "Other Error" + infoSensorList.tError)
                     finish()
                 }
                 is ResultInfoSensor.EmptyResponse -> {
+                    progressBar.visibility = View.GONE
                     Log.d("blablabla", "infoSensorList is Empty")
                     finish()
                 }
@@ -85,6 +98,11 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
         graphSensor1FS.gridLabelRenderer.verticalAxisTitle = getString(R.string.titleTemperature)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putStringArray(KEY_SELECTED_PERIOD, arrayOf(strDateBegin, strDateEnd))
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(kampukter.myWebSocketProject.R.menu.menu_graph_view_settings, menu)
@@ -94,27 +112,31 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_last_day -> {
-                currentDay = Date()
-                val strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24)))
-                val strDateEnd = format.format(currentDay)
+                strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24)))
+                strDateEnd = format.format(currentDay)
                 mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
+                progressBar.visibility = View.VISIBLE
                 return true
             }
             R.id.action_last_week -> {
-                currentDay = Date()
-                val strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24 * 7)))
-                val strDateEnd = format.format(currentDay)
+                strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24 * 7)))
+                strDateEnd = format.format(currentDay)
                 mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
+                progressBar.visibility = View.VISIBLE
                 return true
             }
             R.id.action_month -> {
                 val c = Calendar.getInstance()
-                val dateSetListener = DatePickerDialog.OnDateSetListener { _dp,
+                val dateSetListener = DatePickerDialog.OnDateSetListener { _,
                                                                            year, monthOfYear, dayOfMonth ->
                     c.set(Calendar.YEAR, year)
                     c.set(Calendar.MONTH, monthOfYear)
-                    c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
+                    c.set(Calendar.DAY_OF_MONTH, 1)
+                    strDateBegin = format.format(c.time)
+                    c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    strDateEnd = format.format(c.time)
+                    mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
+                    progressBar.visibility = View.VISIBLE
                 }
                 fragmentManager?.let {
                     MonthDatePickerFragment.create(dateSetListener)
