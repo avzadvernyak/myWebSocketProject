@@ -119,6 +119,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/is_show_table_fab"
+            android:tooltipText="Switch to graph view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -129,6 +130,7 @@
     />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/is_show_graph_fab"
+            android:tooltipText="Switch to table view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

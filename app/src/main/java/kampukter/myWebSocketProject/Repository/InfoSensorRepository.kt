@@ -27,8 +27,9 @@ class InfoSensorRepository {
             }
 
             override fun onFailure(call: Call<List<InfoSensor>>, t: Throwable) {
-                Log.e("blablabla", t.toString())
-                result.postValue(ResultInfoSensor.OtherError(t.toString()))
+                t.message?.let {
+                    result.postValue(ResultInfoSensor.OtherError(it))
+                }
             }
         })
         return result

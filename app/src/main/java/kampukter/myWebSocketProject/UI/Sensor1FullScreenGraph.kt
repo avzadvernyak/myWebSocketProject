@@ -1,6 +1,7 @@
 package kampukter.myWebSocketProject.UI
 
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -18,6 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import android.view.*
+import com.google.android.material.snackbar.Snackbar
 
 private const val KEY_SELECTED_PERIOD = "KEY_SELECTED_PERIOD"
 
@@ -73,13 +75,25 @@ class Sensor1FullScreenGraph : AppCompatActivity() {
                 }
                 is ResultInfoSensor.OtherError -> {
                     progressBar.visibility = View.GONE
-                    Log.d("blablabla", "Other Error" + infoSensorList.tError)
-                    finish()
+                    Log.d("blablabla", "Other Error:" + infoSensorList.tError)
+
+                    fragmentManager?.let {
+                        ErrorConnectAlertDialogFragment.create(
+                            infoSensorList.tError,
+                            DialogInterface.OnClickListener { _, _ -> finish() })
+                            .show(supportFragmentManager, ErrorConnectAlertDialogFragment.TAG)
+                    }
                 }
                 is ResultInfoSensor.EmptyResponse -> {
                     progressBar.visibility = View.GONE
-                    Log.d("blablabla", "infoSensorList is Empty")
-                    finish()
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.noDataMessage, "$strDateBegin-$strDateEnd"),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                    strDateBegin = format.format(Date(currentDay.time - (1000 * 60 * 60 * 24)))
+                    strDateEnd= format.format(currentDay)
+                    mainViewModel.getQuestionInfoSensor(RequestPeriod("ESP8266-01", strDateBegin, strDateEnd))
                 }
 
             }
