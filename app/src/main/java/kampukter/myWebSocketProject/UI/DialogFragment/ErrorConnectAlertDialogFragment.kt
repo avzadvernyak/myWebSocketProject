@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.UI.DialogFragment
 
 import androidx.fragment.app.DialogFragment
 import android.app.Dialog

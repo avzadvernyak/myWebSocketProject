@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.UI.DialogFragment
 
 import android.app.DatePickerDialog
 import android.app.Dialog

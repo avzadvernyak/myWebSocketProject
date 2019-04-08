@@ -1,7 +1,6 @@
 package kampukter.myWebSocketProject.UI
 
 import android.app.DatePickerDialog
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -17,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.Data.ResultInfoSensor
 import kampukter.myWebSocketProject.R
+import kampukter.myWebSocketProject.UI.DialogFragment.DatePickerFragment
 import kampukter.myWebSocketProject.ViewModel.MainViewModel
 import kotlinx.android.synthetic.main.sensor1_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -129,5 +129,4 @@ class Sensor1InformationFragment : Fragment() {
             }
         }
     }
-
 }

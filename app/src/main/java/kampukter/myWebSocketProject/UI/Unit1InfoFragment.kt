@@ -7,14 +7,13 @@ import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import kampukter.myWebSocketProject.R
 import kampukter.myWebSocketProject.ViewModel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val KEY_SELECTED_ITEMS = "KEY_SELECTED_ITEMS"
 
-class MainFragment : Fragment() {
+class Unit1InfoFragment : Fragment() {
 
     private val mainViewModel by viewModel<MainViewModel>()
     private var isShowTable = false
@@ -24,19 +23,20 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+/*
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbarUnitState)
         (activity as AppCompatActivity).supportActionBar?.apply {
             title = "Unit Info"
-            mainViewModel.infoIpAddressUnit.observe(this@MainFragment, Observer { inf ->
+            mainViewModel.infoIpAddressUnit.observe(this@Unit1InfoFragment, Observer { inf ->
                 subtitle = inf
             })
         }
+        */
         savedInstanceState?.getBoolean(KEY_SELECTED_ITEMS)?.let { value ->
             isShowTable = value
         }
@@ -62,6 +62,9 @@ class MainFragment : Fragment() {
             }
             return@setOnNavigationItemSelectedListener true
         }
+        mainViewModel.infoIpAddressUnit.observe(this@Unit1InfoFragment, Observer { inf ->
+            connectToTextView.text = "Connect to $inf"
+        })
         mainViewModel.sensorInfo.observe(this, Observer {
             firstSensorValueTextView.text = it.sensor1.toString()
             statusRelayCheckBox.setOnCheckedChangeListener(null)
@@ -105,7 +108,7 @@ class MainFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(KEY_SELECTED_ITEMS, isShowTable)
     }
-
+/*
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_fragment_menu, menu)
@@ -122,5 +125,11 @@ class MainFragment : Fragment() {
             }
         }
                 )
+    }
+    */
+    companion object {
+        fun newInstance(): Unit1InfoFragment {
+            return Unit1InfoFragment()
+        }
     }
 }
