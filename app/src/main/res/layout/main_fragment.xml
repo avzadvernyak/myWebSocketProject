@@ -2,28 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <!--
-    <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarUnitState"
-            android:layout_width="match_parent"
-            android:background="?attr/colorPrimary"
-            android:layout_height="?attr/actionBarSize"
-            tools:ignore="MissingConstraints">
-    </androidx.appcompat.widget.Toolbar>
-    -->
 
     <TextView
             android:id="@+id/connectToTextView"
-            android:text="@string/firstSensorTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="48dp"
+            android:layout_marginStart="24dp"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="18sp"
+            android:textAlignment="center"/>
     <TextView
             android:id="@+id/firstSensorTitleTextView"
             android:text="@string/firstSensorTitle"
@@ -86,16 +79,6 @@
             android:layout_marginStart="32dp"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/divider"
             android:layout_marginTop="8dp"/>
-    <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/on_of_testSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/statusRelayCheckBox"
-            android:text="@string/statusRelayTitle"
-            android:layout_marginTop="8dp"
-    />
     <Button
             android:id="@+id/reconnectButton"
             android:text="@string/reconnectButtonTitle"
