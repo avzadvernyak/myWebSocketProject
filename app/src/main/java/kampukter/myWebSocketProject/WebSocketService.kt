@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kampukter.myWebSocketProject.Data.UnitSensorInfo
-import kampukter.myWebSocketProject.Repository.WebSocketRepository
+import kampukter.myWebSocketProject.repository.WebSocketRepository
 import kampukter.myWebSocketProject.UnitSensorApplication.Companion.ipAddressUnit
 import okhttp3.*
 import java.util.*

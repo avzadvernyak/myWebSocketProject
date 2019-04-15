@@ -1,19 +1,35 @@
-package kampukter.myWebSocketProject.ViewModel
+package kampukter.myWebSocketProject.viewModel
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import kampukter.myWebSocketProject.Data.InfoSensor
+import kampukter.myWebSocketProject.Data.RequestLocation
 import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.Data.ResultInfoSensor
-import kampukter.myWebSocketProject.Repository.InfoSensorRepository
-import kampukter.myWebSocketProject.Repository.WebSocketRepository
+import kampukter.myWebSocketProject.Data.ResultLocation
+import kampukter.myWebSocketProject.repository.InfoSensorRepository
+import kampukter.myWebSocketProject.repository.LocationRepository
+import kampukter.myWebSocketProject.repository.WebSocketRepository
 
 class MainViewModel(
     private val webSocketRepository: WebSocketRepository,
-    private val infoSensorRepository: InfoSensorRepository
+    private val infoSensorRepository: InfoSensorRepository,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
+
+    val locationAddr = locationRepository.result
+
+    val _location = MutableLiveData<RequestLocation>()
+    val locAdr: LiveData<ResultLocation> = Transformations.switchMap(_location) { question ->
+        locationRepository.getFetchAddress(question)
+    }
+    fun getLocation(arg:RequestLocation){
+        _location.postValue(arg)
+    }
+
+
 
     val isConnect = webSocketRepository.getIsConnect()
     val logProcess = webSocketRepository.getLogProcess()

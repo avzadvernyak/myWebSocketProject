@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.ui
 
 import android.content.Intent
 import android.os.Bundle

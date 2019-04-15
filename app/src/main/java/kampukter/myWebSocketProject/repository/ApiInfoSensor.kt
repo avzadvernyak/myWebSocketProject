@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.Repository
+package kampukter.myWebSocketProject.repository
 
 import kampukter.myWebSocketProject.Data.InfoSensor
 import retrofit2.Call

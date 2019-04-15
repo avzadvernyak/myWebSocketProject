@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.ui
 
 import android.text.format.DateFormat
 import android.view.View

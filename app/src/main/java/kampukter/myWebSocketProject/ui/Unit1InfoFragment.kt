@@ -1,14 +1,13 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.main_fragment.*
 import android.content.Intent
-import android.util.Log
 import android.view.*
 import kampukter.myWebSocketProject.R
-import kampukter.myWebSocketProject.ViewModel.MainViewModel
+import kampukter.myWebSocketProject.viewModel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val KEY_SELECTED_ITEMS = "KEY_SELECTED_ITEMS"

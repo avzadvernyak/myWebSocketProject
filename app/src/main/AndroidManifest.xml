@@ -4,7 +4,6 @@
           package="kampukter.myWebSocketProject">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
@@ -16,40 +15,45 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning"
             android:name=".UnitSensorApplication">
-        <activity android:name=".UI.MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".WebSocketService" > </service>
-        <activity android:name=".UI.SettingsActivity"
-                  android:parentActivityName=".UI.MainActivity"
+
+        <service android:name=".WebSocketService"/>
+        <service android:name=".FetchAddressIntentService"
+                 android:exported="false">
+        </service>
+
+        <activity android:name=".ui.SettingsActivity"
+                  android:parentActivityName=".ui.MainActivity"
                   android:label="SettingsActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".UI.MainActivity">
+                    android:value=".ui.MainActivity">
             </meta-data>
         </activity>
-        <activity android:name=".UI.Sensor1FullScreenGraph"
-                  android:parentActivityName=".UI.MainActivity"
+        <activity android:name=".ui.Sensor1FullScreenGraph"
+                  android:parentActivityName=".ui.MainActivity"
                   android:label="SettingsActivity"
-                  >
+        >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".UI.MainActivity">
+                    android:value=".ui.MainActivity">
             </meta-data>
         </activity>
-        <activity android:name=".UI.Sensor1Information"
-                  android:parentActivityName=".UI.MainActivity"
+        <activity android:name=".ui.Sensor1Information"
+                  android:parentActivityName=".ui.MainActivity"
                   android:label="Sensor1Information"
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".UI.MainActivity">
+                    android:value=".ui.MainActivity">
             </meta-data>
         </activity>
-        <activity android:name=".UI.LocationActivity"/>
+        <activity android:name=".ui.LocationActivity"/>
     </application>
 
 </manifest>

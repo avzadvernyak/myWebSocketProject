@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.ui
 
 import android.app.DatePickerDialog
 import android.content.DialogInterface
@@ -13,15 +13,15 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.Data.ResultInfoSensor
 import kampukter.myWebSocketProject.R
-import kampukter.myWebSocketProject.ViewModel.MainViewModel
+import kampukter.myWebSocketProject.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.sensor1_full_screen_graph_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import android.view.*
 import com.google.android.material.snackbar.Snackbar
-import kampukter.myWebSocketProject.UI.DialogFragment.ErrorConnectAlertDialogFragment
-import kampukter.myWebSocketProject.UI.DialogFragment.MonthDatePickerFragment
+import kampukter.myWebSocketProject.ui.DialogFragment.ErrorConnectAlertDialogFragment
+import kampukter.myWebSocketProject.ui.DialogFragment.MonthDatePickerFragment
 
 private const val KEY_SELECTED_PERIOD = "KEY_SELECTED_PERIOD"
 

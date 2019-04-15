@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.UI
+package kampukter.myWebSocketProject.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -16,8 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import kampukter.myWebSocketProject.Data.RequestPeriod
 import kampukter.myWebSocketProject.Data.ResultInfoSensor
 import kampukter.myWebSocketProject.R
-import kampukter.myWebSocketProject.UI.DialogFragment.DatePickerFragment
-import kampukter.myWebSocketProject.ViewModel.MainViewModel
+import kampukter.myWebSocketProject.ui.DialogFragment.DatePickerFragment
+import kampukter.myWebSocketProject.viewModel.MainViewModel
 import kotlinx.android.synthetic.main.sensor1_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -37,7 +37,7 @@ class Sensor1InformationFragment : Fragment() {
         return inflater.inflate(R.layout.sensor1_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View,  savedInstanceState: Bundle?) {
 
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.apply {

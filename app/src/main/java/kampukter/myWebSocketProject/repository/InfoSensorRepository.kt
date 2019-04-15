@@ -1,6 +1,5 @@
-package kampukter.myWebSocketProject.Repository
+package kampukter.myWebSocketProject.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kampukter.myWebSocketProject.Data.InfoSensor

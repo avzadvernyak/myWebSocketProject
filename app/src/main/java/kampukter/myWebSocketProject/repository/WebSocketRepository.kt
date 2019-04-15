@@ -1,4 +1,4 @@
-package kampukter.myWebSocketProject.Repository
+package kampukter.myWebSocketProject.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
