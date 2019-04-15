@@ -14,7 +14,7 @@ import java.util.*
 
 class LocationRepository {
     val result = MutableLiveData<ResultLocation>()
-    
+
     fun getFetchAddress(arg: RequestLocation): LiveData<ResultLocation> {
         val location = arg.location
         val context = arg.context
